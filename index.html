@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasternWH | Heavy Equipment Parts Monitoring</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">E</div>
+        <div>
+          <h1>Eastern1961WH</h1>
+          <p>Parts Monitoring</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-btn active" data-page="dashboardPage"><span>🏠</span> Dashboard</button>
+        <button type="button" class="nav-btn" data-page="addRecordPage"><span>➕</span> Add Record</button>
+        <button type="button" class="nav-btn" data-page="recordsPage"><span>📋</span> Records</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Realtime Database</p>
+        <strong id="connectionStatus">Connecting...</strong>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Heavy Equipment</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <button type="button" class="ghost-btn" id="quickAddBtn">+ New Record</button>
+        </div>
+      </header>
+
+      <section id="dashboardPage" class="page active-page">
+        <div class="cards status-only-cards">
+          <div class="card card-pending">
+            <div class="card-icon">⏳</div>
+            <div><p>Pending</p><h3 id="pendingCount">0</h3></div>
+          </div>
+          <div class="card card-received">
+            <div class="card-icon">📥</div>
+            <div><p>Received</p><h3 id="receivedCount">0</h3></div>
+          </div>
+          <div class="card card-installed">
+            <div class="card-icon">✅</div>
+            <div><p>Installed</p><h3 id="installedCount">0</h3></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Recent Activities</h3>
+            <p>Latest 5 records from Firebase</p>
+          </div>
+          <div class="table-wrapper">
+            <table class="compact-table">
+              <thead>
+                <tr>
+                  <th>Equip No.</th>
+                  <th>Part Name</th>
+                  <th>PR No.</th>
+                  <th>Status</th>
+                  <th>Received Date</th>
+                  <th>Installed Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentRecords"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="addRecordPage" class="page">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div>
+              <h3 id="formTitle">Add Record</h3>
+              <p>Input PR parts details. Received and Installed dates are generated automatically.</p>
+            </div>
+            <button type="button" id="clearBtn" class="secondary-btn">Clear Form</button>
+          </div>
+
+          <form id="recordForm">
+            <input type="hidden" id="editIndex" />
+
+            <div class="section-title">Equipment Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="equipNo">Equip No.</label>
+                <input type="text" id="equipNo" required placeholder="e.g. RS-01" />
+              </div>
+              <div class="form-group">
+                <label for="partName">Part Name</label>
+                <input type="text" id="partName" required placeholder="e.g. Hydraulic Hose" />
+              </div>
+              <div class="form-group">
+                <label for="partNumber">Part Number</label>
+                <input type="text" id="partNumber" placeholder="Optional" />
+              </div>
+            </div>
+
+            <div class="section-title">Purchase Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="prNo">PR No.</label>
+                <input type="text" id="prNo" required placeholder="e.g. PR-2026-001" />
+              </div>
+              <div class="form-group">
+                <label for="supplier">Supplier</label>
+                <input type="text" id="supplier" placeholder="Supplier name" />
+              </div>
+              <div class="form-group">
+                <label for="prDate">PR Date</label>
+                <input type="date" id="prDate" required />
+              </div>
+            </div>
+
+            <div class="section-title">Delivery / Installation</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="qty">QTY</label>
+                <input type="number" id="qty" min="0" step="any" required />
+              </div>
+              <div class="form-group">
+                <label for="unit">Unit</label>
+                <input type="text" id="unit" placeholder="pcs, set, ltr" required />
+              </div>
+              <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" required>
+                  <option value="Pending">Pending</option>
+                  <option value="Received">Received</option>
+                  <option value="Installed">Installed</option>
+                </select>
+              </div>
+              <div class="form-group readonly-box">
+                <label>Received Date</label>
+                <span id="receivedDatePreview">Automatic</span>
+              </div>
+              <div class="form-group readonly-box">
+                <label>Installed Date</label>
+                <span id="installedDatePreview">Automatic</span>
+              </div>
+              <div class="form-group full">
+                <label for="remarks">Remarks</label>
+                <textarea id="remarks" rows="3" placeholder="Add notes or follow-up details"></textarea>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Save Record</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="recordsPage" class="page">
+        <div class="records-toolbar">
+          <div>
+            <h3>Records</h3>
+            <p>Search, filter, edit, delete, and export records.</p>
+          </div>
+          <button id="exportBtn" class="primary-btn">Export CSV</button>
+        </div>
+
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Search equip, part, PR, supplier, remarks..." />
+          <select id="statusFilter">
+            <option value="">Select status to view records</option>
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="Received">Received</option>
+            <option value="Installed">Installed</option>
+          </select>
+        </div>
+
+        <div class="record-summary"><strong id="recordCount">Total Records: 0</strong></div>
+
+        <div class="table-wrapper records-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Equip No.</th>
+                <th>Part Name</th>
+                <th>Part Number</th>
+                <th>PR No.</th>
+                <th>Supplier</th>
+                <th>PR Date</th>
+                                <th>QTY</th>
+                <th>Unit</th>
+                <th>Remarks</th>
+                <th>Status</th>
+                <th>Received Date</th>
+                <th>Installed Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <script>
+    // Navigation runs separately so Dashboard / Add Record / Records remain clickable
+    // even if Firebase is slow or temporarily blocked.
+    (function () {
+      function openPage(pageId) {
+        document.querySelectorAll(".page").forEach(function (page) {
+          page.classList.remove("active-page");
+        });
+        var target = document.getElementById(pageId);
+        if (target) target.classList.add("active-page");
+
+        document.querySelectorAll(".nav-btn").forEach(function (btn) {
+          btn.classList.toggle("active", btn.dataset.page === pageId);
+        });
+
+        var pageTitle = document.getElementById("pageTitle");
+        if (pageTitle) {
+          pageTitle.textContent = pageId === "addRecordPage" ? "Add Record" : pageId === "recordsPage" ? "Records" : "Dashboard";
+        }
+      }
+
+      window.openEasternPage = openPage;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".nav-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            openPage(button.dataset.page);
+          });
+        });
+
+        var quickAddBtn = document.getElementById("quickAddBtn");
+        if (quickAddBtn) {
+          quickAddBtn.addEventListener("click", function () {
+            openPage("addRecordPage");
+          });
+        }
+      });
+    })();
+  </script>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
