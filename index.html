@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EasternWH | Heavy Equipment Parts Monitoring</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">MP</div>
+        <div>
+          <h1>Motorpool Warehouse</h1>
+          <p>Parts Monitoring</p>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-btn active" data-page="dashboardPage"><span>🏠</span> Dashboard</button>
+        <button type="button" class="nav-btn" data-page="addRecordPage"><span>➕</span> Add Equipment Parts</button>
+        <button type="button" class="nav-btn" data-page="recordsPage"><span>📋</span> Equipment Parts Summary</button>
+        <button type="button" class="nav-btn" data-page="equipmentRecordPage"><span>🚜</span> Equipment Record</button>
+        <button type="button" class="nav-btn" data-page="motorpoolConsumablesPage"><span>🧰</span> Motorpool Consumables</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Realtime Database</p>
+        <strong id="connectionStatus">Connecting...</strong>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Heavy Equipment</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          
+        </div>
+      </header>
+
+      <section id="dashboardPage" class="page active-page">
+        <div class="cards status-only-cards">
+          <div class="card card-pending">
+            <div class="card-icon">⏳</div>
+            <div><p>Pending for approval</p><h3 id="pendingApprovalCount">0</h3></div>
+          </div>
+          <div class="card card-approved">
+            <div class="card-icon">📝</div>
+            <div><p>Approved waiting for delivery</p><h3 id="approvedWaitingCount">0</h3></div>
+          </div>
+          <div class="card card-received">
+            <div class="card-icon">📥</div>
+            <div><p>Received stored at warehouse</p><h3 id="receivedWarehouseCount">0</h3></div>
+          </div>
+          <div class="card card-installed">
+            <div class="card-icon">✅</div>
+            <div><p>Installed</p><h3 id="installedCount">0</h3></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h3>Recent Activities</h3>
+            <p>Latest 5 records from Database</p>
+          </div>
+          <div class="table-wrapper">
+            <table class="compact-table">
+              <thead>
+                <tr>
+                  <th>Equip No.</th>
+                  <th>Transfer To</th>
+                  <th>Part Name</th>
+                  <th>PR No.</th>
+                  <th>Status</th>
+                  <th>Received Date</th>
+                  <th>Installed Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentRecords"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="addRecordPage" class="page">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div>
+              <h3 id="formTitle">Add Equipment Parts</h3>
+              <p>Input equipment parts details. Dates are generated automatically based on status.</p>
+            </div>
+            <button type="button" id="clearBtn" class="secondary-btn">Clear Form</button>
+          </div>
+
+          <form id="recordForm">
+            <input type="hidden" id="editIndex" />
+
+            <div class="section-title">Equipment Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="equipNo">Equip No.</label>
+                <select id="equipNo">
+                  <option value="">Select equipment from Equipment Record</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="partName">Part Name</label>
+                <input type="text" id="partName" list="partNameList" placeholder="Select or type new part name" autocomplete="off" />
+                <datalist id="partNameList">
+                  <option value="00210-04 Ferrule"></option>
+                  <option value="00400-12 Ferrule"></option>
+                  <option value="00400-16 Ferrule"></option>
+                  <option value="Automotive wire #16"></option>
+                  <option value="Automotive wire #18"></option>
+                  <option value="Bearing"></option>
+                  <option value="Bendix Gear"></option>
+                  <option value="Betagray silicone"></option>
+                  <option value="Brake Assy"></option>
+                  <option value="Contact cleaner"></option>
+                  <option value="CONTROL MOTOR"></option>
+                  <option value="Control Unit MCS20"></option>
+                  <option value="Control Valve"></option>
+                  <option value="Cummins 6CTA Cylinder Head APS"></option>
+                  <option value="Cummins 6CTA Standard Piston Ring"></option>
+                  <option value="Cummins QSM11 fuel pump"></option>
+                  <option value="Cummins QSM11Fuel Pump"></option>
+                  <option value="Cutting disc"></option>
+                  <option value="Cylinder Head Volvo TAD 720VE"></option>
+                  <option value="Cylinder Head Volvo TAD 720VE APS"></option>
+                  <option value="Differential Assembly 81.5535.3C"></option>
+                  <option value="Elbow Fittings 45' 3/4 ORFS"></option>
+                  <option value="Elbow Fittings 90' (Flange Type) 3/4 ORFS"></option>
+                  <option value="Elbow Fittings 90' 1/4 JIC"></option>
+                  <option value="Elbow Fittings 90' 1/4 ORFS"></option>
+                  <option value="Elbow Fittings 90' 3/4 ORFS"></option>
+                  <option value="Elbow Fittings 90' 3/8 ORFS"></option>
+                  <option value="Filter"></option>
+                  <option value="Flasher"></option>
+                  <option value="Flasher Switch"></option>
+                  <option value="Hydraulic Filter"></option>
+                  <option value="Hydraulic Hose 2 wire 39cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 436cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 460cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 46cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 61cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 75cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 78cmx1/4"></option>
+                  <option value="Hydraulic Hose 2 wire 84cmx1/4"></option>
+                  <option value="Hydraulic Hose 4 wire 125cmx3/4"></option>
+                  <option value="Hydraulic Hose 4 wire 34cmx1"></option>
+                  <option value="Hydraulic Hose 4 wire 34cmx3/8"></option>
+                  <option value="Hydraulic Hose 4 wire 74cmx3/4"></option>
+                  <option value="Hydraulic Hose 4 wire 78cmx3/4"></option>
+                  <option value="Hydraulic Pump APS"></option>
+                  <option value="Ignition Switch"></option>
+                  <option value="Injector"></option>
+                  <option value="Interior"></option>
+                  <option value="Joystick"></option>
+                  <option value="Magnetic coil APS"></option>
+                  <option value="Oil Filter"></option>
+                  <option value="oil seal position 8"></option>
+                  <option value="O-Ring"></option>
+                  <option value="O-ring"></option>
+                  <option value="O-ring Kit"></option>
+                  <option value="Pin Fabrication"></option>
+                  <option value="pressure sensor"></option>
+                  <option value="Pump"></option>
+                  <option value="Radiator Fan"></option>
+                  <option value="Rags"></option>
+                  <option value="Screw"></option>
+                  <option value="Seal Kit"></option>
+                  <option value="seal position 12"></option>
+                  <option value="seal position 24"></option>
+                  <option value="Selector Switch"></option>
+                  <option value="Sensor"></option>
+                  <option value="Sensor Angle"></option>
+                  <option value="Sensor Length"></option>
+                  <option value="Sensor Pressure"></option>
+                  <option value="Sideshift cylinder"></option>
+                  <option value="Slide Bearing"></option>
+                  <option value="Solenoid Valve"></option>
+                  <option value="Speed Sensor"></option>
+                  <option value="Square- Oring"></option>
+                  <option value="STARTER"></option>
+                  <option value="Starter Motor"></option>
+                  <option value="Starter solenoid"></option>
+                  <option value="Steering Control"></option>
+                  <option value="Steering Cylinder seal kit"></option>
+                  <option value="Straight Fitting 90' 1&quot; ORFS"></option>
+                  <option value="Straight Fittings (Female) 1/4 ORFS"></option>
+                  <option value="Straight Fittings (Male) 1/4 ORFS"></option>
+                  <option value="Straight Fittings 1&quot; ORFS"></option>
+                  <option value="Straight Fittings 1/4 JIC"></option>
+                  <option value="Straight Fittings 1/4 ORFS"></option>
+                  <option value="Straight Fittings 3/8 ORFS"></option>
+                  <option value="Straight Fittings Male 3/4 ORFS"></option>
+                  <option value="Stud Bolt Rear APS"></option>
+                  <option value="Switch"></option>
+                  <option value="Transmission"></option>
+                  <option value="Transmission assembly"></option>
+                  <option value="Transmission controller"></option>
+                  <option value="Transmission Oil Cooler (For Repair)"></option>
+                  <option value="Turn Signal"></option>
+                  <option value="Volvo Engine TAD720VE Overhauling Gasket Upper and Lower"></option>
+                  <option value="Water Pump Assy"></option>
+                  <option value="Wear Washer"></option>
+                  <option value="Wiper Blade"></option>
+                  <option value="Wiper Motor"></option>
+                  <option value="Wire Harness Chassis"></option>
+                  <option value="Others"></option>
+                </datalist>
+              </div>
+              <div class="form-group">
+                <label for="partNumber">Part Number</label>
+                <input type="text" id="partNumber" placeholder="Optional" />
+              </div>
+            </div>
+
+            <div class="section-title">Purchase Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="prNo">PR No.</label>
+                <input type="text" id="prNo" placeholder="e.g. PR-2026-001" />
+              </div>
+              <div class="form-group">
+                <label for="supplier">Supplier</label>
+                <input type="text" id="supplier" placeholder="Supplier name" />
+              </div>
+              <div class="form-group">
+                <label for="prDate">PR Date</label>
+                <input type="date" id="prDate" />
+              </div>
+            </div>
+
+            <div class="section-title">Delivery / Installation</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="qty">QTY</label>
+                <input type="number" id="qty" min="0" step="any" />
+              </div>
+              <div class="form-group">
+                <label for="unit">Unit</label>
+                <input type="text" id="unit" placeholder="pcs, set, ltr" />
+              </div>
+              <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status">
+                  <option value="Pending for approval">Pending for approval</option>
+                  <option value="Approved waiting for delivery">Approved waiting for delivery</option>
+                  <option value="Received stored at warehouse">Received stored at warehouse</option>
+                  <option value="Installed">Installed</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="receivedDateInput">Received / Warehouse Date</label>
+                <input type="date" id="receivedDateInput" />
+              </div>
+              <div class="form-group">
+                <label for="installedDateInput">Installed Date</label>
+                <input type="date" id="installedDateInput" />
+              </div>
+              <div class="form-group full">
+                <label for="remarks">Remarks</label>
+                <textarea id="remarks" rows="3" placeholder="Add notes or follow-up details"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="transferTo">Transfer To</label>
+                <select id="transferTo">
+                  <option value="">Select transfer equipment from Equipment Record</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Save Record</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="recordsPage" class="page">
+        <div class="records-toolbar">
+          <div>
+            <h3>Equipment Parts Summary</h3>
+            <p>Search, filter, edit, delete, and export equipment parts summary.</p>
+          </div>
+          <button id="exportBtn" class="primary-btn">Export CSV</button>
+        </div>
+
+        <div class="filters">
+          <input type="text" id="searchInput" placeholder="Search equip, part, PR, supplier, remarks..." />
+          <select id="statusFilter">
+            <option value="">Select status to view records</option>
+            <option value="All">All</option>
+            <option value="Pending for approval">Pending for approval</option>
+            <option value="Approved waiting for delivery">Approved waiting for delivery</option>
+            <option value="Received stored at warehouse">Received stored at warehouse</option>
+            <option value="Installed">Installed</option>
+          </select>
+        </div>
+
+        <div class="record-summary"><strong id="recordCount">Total Records: 0</strong></div>
+
+        <div class="table-wrapper records-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Equip No.</th>
+                <th>Part Name</th>
+                <th>Part Number</th>
+                <th>PR No.</th>
+                <th>Supplier</th>
+                <th>PR Date</th>
+                <th>QTY</th>
+                <th>Unit</th>
+                <th>Remarks</th>
+                <th>Status</th>
+                <th>Received Date</th>
+                <th>Installed Date</th>
+                <th>Transfer Date</th>
+                <th>Transfer To</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+
+
+      <section id="motorpoolConsumablesPage" class="page">
+        <div class="records-toolbar consumables-toolbar">
+          <div>
+            <h3>Motorpool Consumables Inventory</h3>
+            <p>Inventory list with current stock. Use the buttons per item for Withdrawal or Replenishment.</p>
+          </div>
+          <div class="toolbar-actions">
+            <button type="button" id="newConsumableItemBtn" class="primary-btn">+ New Item / Beginning Stock</button>
+            <button id="exportConsumablesBtn" class="secondary-btn">Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrapper consumable-summary-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Unit</th>
+                <th>Total Replenished</th>
+                <th>Total Withdrawn</th>
+                <th>Current Stock</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="consumableSummaryTable"></tbody>
+          </table>
+        </div>
+
+        <div class="form-card hidden" id="consumableTransactionPanel">
+          <div class="form-card-header">
+            <div>
+              <h3 id="consumableFormTitle">Consumable Transaction</h3>
+              <p id="consumableFormSubtitle">Record stock-in or stock-out movement.</p>
+            </div>
+            <button type="button" id="clearConsumableBtn" class="secondary-btn">Close / Clear</button>
+          </div>
+
+          <form id="consumableForm">
+            <input type="hidden" id="consumableEditKey" />
+            <input type="hidden" id="consumableTransactionType" value="Replenishment" />
+            <div class="section-title">Transaction Details</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="consumableItemName">Item Name</label>
+                <input type="text" id="consumableItemName" placeholder="e.g. Contact Cleaner, Rags, Grease" required />
+              </div>
+              <div class="form-group">
+                <label for="consumableCategory">Category</label>
+                <input type="text" id="consumableCategory" placeholder="e.g. Oil, Cleaning, Electrical" />
+              </div>
+              <div class="form-group">
+                <label for="consumableUnit">Unit</label>
+                <input type="text" id="consumableUnit" placeholder="pcs, ltr, kg, roll" required />
+              </div>
+              <div class="form-group">
+                <label>Transaction Type</label>
+                <div id="consumableTypeDisplay" class="readonly-pill">Replenishment</div>
+              </div>
+              <div class="form-group">
+                <label for="consumableQty">Quantity</label>
+                <input type="number" id="consumableQty" min="0.01" step="any" required />
+              </div>
+              <div class="form-group">
+                <label for="consumableDate">Date</label>
+                <input type="date" id="consumableDate" required />
+              </div>
+              <div class="form-group">
+                <label for="consumableRequestedBy">Requested / Received By</label>
+                <input type="text" id="consumableRequestedBy" placeholder="Name or department" />
+              </div>
+              <div class="form-group">
+                <label for="consumableReferenceNo">Reference No.</label>
+                <input type="text" id="consumableReferenceNo" placeholder="RIS / DR / Invoice / Slip No." />
+              </div>
+              <div class="form-group full">
+                <label for="consumableRemarks">Remarks</label>
+                <textarea id="consumableRemarks" rows="3" placeholder="Purpose, equipment used, supplier, or notes"></textarea>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" id="saveConsumableBtn" class="primary-btn">Save Transaction</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="records-toolbar consumables-toolbar history-header">
+          <div>
+            <h3>History of Transactions</h3>
+            <p>Search and filter withdrawal/replenishment records below.</p>
+          </div>
+        </div>
+
+        <div class="filters consumable-history-filters">
+          <input type="text" id="consumableSearchInput" placeholder="Search item, category, unit, reference, person, remarks..." />
+          <select id="consumableTypeFilter">
+            <option value="All">All Transaction History</option>
+            <option value="Replenishment">Replenishment Only</option>
+            <option value="Withdrawal">Withdrawal Only</option>
+          </select>
+          <div class="date-filter-group">
+            <label for="consumableDateFrom">Date From</label>
+            <input type="date" id="consumableDateFrom" />
+          </div>
+          <div class="date-filter-group">
+            <label for="consumableDateTo">Date To</label>
+            <input type="date" id="consumableDateTo" />
+          </div>
+        </div>
+
+        <div class="record-summary"><strong id="consumableCount">Total Transactions: 0</strong></div>
+
+        <div class="table-wrapper records-table-wrapper consumables-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Item Name</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>QTY</th>
+                <th>Unit</th>
+                <th>Requested / Received By</th>
+                <th>Reference No.</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="consumableTable"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="equipmentRecordPage" class="page">
+        <div class="form-card">
+          <div class="form-card-header">
+            <div>
+              <h3 id="equipmentFormTitle">Equipment Record Input</h3>
+              <p>Add equipment masterlist details and upload a photo preview.</p>
+            </div>
+            <button type="button" id="clearEquipmentBtn" class="secondary-btn">Clear Form</button>
+          </div>
+
+          <form id="equipmentForm">
+            <input type="hidden" id="equipmentEditKey" />
+
+            <div class="section-title">Equipment Details</div>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="equipmentName">Equipment</label>
+                <input type="text" id="equipmentName" placeholder="e.g. Reach Stacker" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentNo">Equip No.</label>
+                <input type="text" id="equipmentNo" placeholder="e.g. RS-01" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentLocation">Location</label>
+                <input type="text" id="equipmentLocation" placeholder="e.g. Bacao / Enlin" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentCompany">Company</label>
+                <input type="text" id="equipmentCompany" placeholder="Company name" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentModel">Model</label>
+                <input type="text" id="equipmentModel" placeholder="Equipment model" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentYearModel">Year Model</label>
+                <input type="number" id="equipmentYearModel" min="1900" max="2100" placeholder="e.g. 2020" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentSerialNo">Serial No.</label>
+                <input type="text" id="equipmentSerialNo" placeholder="Serial number" />
+              </div>
+              <div class="form-group">
+                <label for="equipmentStatus">Status</label>
+                <select id="equipmentStatus">
+                  <option value="Operational">Operational</option>
+                  <option value="Refurbishing">Refurbishing</option>
+                  <option value="Under Repair/Maintenance">Under Repair/Maintenance</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="equipmentPicture">Picture</label>
+                <input type="file" id="equipmentPicture" accept="image/*" />
+              </div>
+              <div class="form-group full">
+                <label>Photo Preview</label>
+                <div class="photo-preview-wrap">
+                  <img id="equipmentPhotoPreview" class="photo-preview hidden" alt="Equipment photo preview" />
+                  <span id="equipmentPhotoPlaceholder">No photo selected</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="equipmentTransferTo">Transfer To</label>
+                <select id="equipmentTransferTo">
+                  <option value="">Select transfer equipment from Equipment Record</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="primary-btn">Save Equipment</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="records-toolbar equipment-toolbar">
+          <div>
+            <h3>Equipment Masterlist</h3>
+            <p>Saved equipment records with uploaded photos.</p>
+          </div>
+          <input type="text" id="equipmentSearchInput" placeholder="Search equipment, equip no., location, company, model..." />
+        </div>
+
+        <div class="table-wrapper records-table-wrapper equipment-table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Picture</th>
+                <th>Equipment</th>
+                <th>Equip No.</th>
+                <th>Location</th>
+                <th>Transfer To</th>
+                <th>Company</th>
+                <th>Model</th>
+                <th>Year Model</th>
+                <th>Serial No.</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="equipmentTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+
+  <script>
+    // Navigation runs separately so Dashboard / Add Equipment Parts / Equipment Parts Summary remain clickable
+    // even if Firebase is slow or temporarily blocked.
+    (function () {
+      function openPage(pageId) {
+        document.querySelectorAll(".page").forEach(function (page) {
+          page.classList.remove("active-page");
+        });
+        var target = document.getElementById(pageId);
+        if (target) target.classList.add("active-page");
+
+        document.querySelectorAll(".nav-btn").forEach(function (btn) {
+          btn.classList.toggle("active", btn.dataset.page === pageId);
+        });
+
+        var pageTitle = document.getElementById("pageTitle");
+        if (pageTitle) {
+          pageTitle.textContent = pageId === "addRecordPage" ? "Add Equipment Parts" : pageId === "recordsPage" ? "Equipment Parts Summary" : pageId === "equipmentRecordPage" ? "Equipment Record" : pageId === "motorpoolConsumablesPage" ? "Motorpool Consumables" : "Dashboard";
+        }
+      }
+
+      window.openEasternPage = openPage;
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".nav-btn").forEach(function (button) {
+          button.addEventListener("click", function () {
+            openPage(button.dataset.page);
+          });
+        });
+
+        var quickAddBtn = document.getElementById("quickAddBtn");
+        if (quickAddBtn) {
+          quickAddBtn.addEventListener("click", function () {
+            openPage("addRecordPage");
+          });
+        }
+      });
+    })();
+  </script>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
