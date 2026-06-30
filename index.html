@@ -605,5 +605,24 @@
   </script>
 
   <script type="module" src="app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+ const now = new Date();
+ const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+ document.querySelectorAll('input[type="date"]').forEach(input=>{
+   input.max=today;
+   const checkDate=function(){
+      if(this.value && this.value>today){
+         alert("Error in date. Future dates are not allowed. Please enter today's date or an earlier date.");
+         this.value='';
+         this.focus();
+      }
+   };
+   input.addEventListener('change',checkDate);
+   input.addEventListener('blur',checkDate);
+ });
+});
+</script>
 </body>
 </html>
