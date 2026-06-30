@@ -172,6 +172,54 @@ function getStatusBadge(status) {
   return `<span class="status-badge status-${className}">${safeStatus}</span>`;
 }
 
+
+function getTodayDateString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function showDateError(input) {
+  alert("Error in date. Future dates are not allowed. Please enter today's date or an earlier date.");
+  input.value = "";
+  input.focus();
+}
+
+function validateNoFutureDateInput(input) {
+  if (!input || !input.value) return true;
+  const today = getTodayDateString();
+  if (input.value > today) {
+    showDateError(input);
+    return false;
+  }
+  return true;
+}
+
+function validateNoFutureDatesInForm(form) {
+  const dateInputs = form ? Array.from(form.querySelectorAll('input[type="date"]')) : [];
+  for (const input of dateInputs) {
+    if (!validateNoFutureDateInput(input)) return false;
+  }
+  return true;
+}
+
+function applyNoFutureDateRules() {
+  const today = getTodayDateString();
+  document.querySelectorAll('input[type="date"]').forEach(input => {
+    input.max = today;
+    input.removeEventListener("change", input._noFutureDateHandler || (() => {}));
+    input._noFutureDateHandler = function () {
+      validateNoFutureDateInput(this);
+    };
+    input.addEventListener("change", input._noFutureDateHandler);
+    input.addEventListener("blur", input._noFutureDateHandler);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", applyNoFutureDateRules);
+
 function normalizeDate(value) {
   return value && String(value).trim() !== "" ? value : "-";
 }
@@ -207,6 +255,7 @@ if (statusInput) statusInput.addEventListener("change", updateDatePreview);
 
 recordForm.addEventListener("submit", async function (event) {
   event.preventDefault();
+  if (!validateNoFutureDatesInForm(recordForm)) return;
 
   const oldRecord = editingKey ? getRecordByKey(editingKey) : null;
   const selectedStatus = statusInput.value;
@@ -628,6 +677,7 @@ if (equipmentPicture) {
 if (equipmentForm) {
   equipmentForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (!validateNoFutureDatesInForm(equipmentForm)) return;
 
     const oldRecord = equipmentEditingKey ? getEquipmentByKey(equipmentEditingKey) : null;
     const equipmentRecord = {
@@ -937,6 +987,7 @@ if (toolPicture) {
 if (toolForm) {
   toolForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (!validateNoFutureDatesInForm(toolForm)) return;
 
     const oldRecord = toolEditingKey ? getToolByKey(toolEditingKey) : null;
     const toolRecord = {
@@ -1232,6 +1283,7 @@ function getConsumableTypeBadge(type) {
 if (consumableForm) {
   consumableForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+    if (!validateNoFutureDatesInForm(consumableForm)) return;
 
     const transactionType = document.getElementById("consumableTransactionType").value;
     const qty = Number(document.getElementById("consumableQty").value) || 0;
