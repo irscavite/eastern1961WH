@@ -15,10 +15,8 @@
   };
 
   const PART_STATUSES = [
-    "Pending Approval",
     "Pending for approval",
     "For Canvas",
-    "Approved Waiting for Delivery",
     "Ready for Pickup",
     "For Machining / Fabrication",
     "Received Store at Warehouse",
